@@ -56,10 +56,12 @@ fn get_class(node: &Node, config: &Config) -> Result<String, LookupError> {
         };
 
         let no_names = get_option(config, "no-names") || get_option(config, "no_names");
+        let no_icon_names =
+            get_option(config, "no-icon-names") || get_option(config, "no_icon_names");
 
         Ok(match config.icons.get(&class) {
             Some(icon) => {
-                if no_names {
+                if no_names || no_icon_names {
                     format!("{}", icon)
                 } else {
                     format!("{} {}", icon, class_display_name)
@@ -67,7 +69,7 @@ fn get_class(node: &Node, config: &Config) -> Result<String, LookupError> {
             }
             None => match config.general.get("default_icon") {
                 Some(default_icon) => {
-                    if no_names {
+                    if no_names || no_icon_names {
                         default_icon.to_string()
                     } else {
                         format!("{} {}", default_icon, class_display_name)
@@ -146,11 +148,12 @@ pub fn update_tree(connection: &mut Connection, config: &Config) -> anyhow::Resu
         };
 
         let classes = get_classes(&workspace, config);
-        let classes = if get_option(config, "remove-duplicates") || get_option(config, "remove_duplicates") {
-            classes.into_iter().unique().collect()
-        } else {
-            classes
-        };
+        let classes =
+            if get_option(config, "remove-duplicates") || get_option(config, "remove_duplicates") {
+                classes.into_iter().unique().collect()
+            } else {
+                classes
+            };
 
         let classes = classes.join(separator);
         let classes = if !classes.is_empty() {
