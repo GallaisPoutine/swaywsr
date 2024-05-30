@@ -22,5 +22,5 @@ lazy_static = "1.4.0"
 clap = { version = "4", features = ["derive"] }
 toml = "0.8.10"
 serde = { version = "1.0.183", features = ["derive"] }
-swayipc = "3.0.1"
+swayipc = "3.0.2"
 itertools = "0.12.1"
