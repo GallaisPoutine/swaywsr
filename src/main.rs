@@ -19,6 +19,9 @@ struct Cli {
     /// Remove duplicate entries in workspace
     #[arg(short, long, default_value_t = false)]
     remove_duplicates: bool,
+    /// Display names only if icon is not available
+    #[arg(short, long, default_value_t = false)]
+    no_icon_names: bool,
 }
 
 fn main() -> anyhow::Result<()> {
@@ -48,6 +51,12 @@ fn main() -> anyhow::Result<()> {
         config
             .options
             .insert("remove-duplicates".to_string(), cli.remove_duplicates);
+    }
+
+    if cli.no_icon_names {
+        config
+            .options
+            .insert("no-icons-names".to_string(), cli.no_icon_names);
     }
 
     let subs = [EventType::Window, EventType::Workspace];
