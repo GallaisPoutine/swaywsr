@@ -119,7 +119,7 @@ fn get_window_nodes(mut nodes: Vec<Vec<&Node>>) -> Vec<&Node> {
 }
 
 /// Return a collection of window classes
-fn get_classes(workspace: &Node, config: &Config) -> Vec<String> {
+fn get_classes(workspace: &Node, config: &Config, nodetype: NodeType) -> Vec<String> {
     let window_nodes = {
         let mut f = get_window_nodes(vec![workspace.floating_nodes.iter().collect()]);
         let mut n = get_window_nodes(vec![workspace.nodes.iter().collect()]);
@@ -139,6 +139,7 @@ fn get_classes(workspace: &Node, config: &Config) -> Vec<String> {
         window_classes.push(class);
     }
 
+   eprintln!("window_classes: {:?}", window_classes);
     window_classes
 }
 
@@ -160,12 +161,21 @@ pub fn update_tree(connection: &mut Connection, config: &Config) -> anyhow::Resu
         let workspace_name = workspace_name_opt.unwrap_or("".to_string());
 
         if !workspace_name.ends_with(char_ignore) {
-            let classes = get_classes(&workspace, config);
+            let classes = get_classes(&workspace, config, NodeType::Con);
             let classes = if get_option_variants!(config, "remove-duplicates") {
                 classes.into_iter().unique().collect()
             } else {
                 classes
             };
+
+            //let classes = if get_option_variants!(config, "split-float") {
+            //    classes.into_iter()
+            //        .partition::<Vec<_>, _>(|c| c.node_type == NodeType::Con)
+            //        .map(|(n, f)| n.into_iter().chain(f))
+            //        .unwrap();
+            //} else {
+            //    classes
+            //};
 
             let classes = classes.join(separator);
             let classes = if !classes.is_empty() {
